@@ -1,0 +1,11 @@
+request
+pandas
+tqdm
+requests
+xlrd
+pyexcel
+pyexcel-xls
+coverage
+flask_script
+xlsxwriter
+requests_html
