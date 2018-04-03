@@ -1,30 +1,15 @@
 # -*- coding: utf-8 -*-
 from requests_html import HTMLSession
-import parser
-import requests
-from tqdm import tqdm
 import os
 import csv
-import time
+import datetime
+from bs4 import BeautifulSoup
 
 
-def download_file(url, file_name):
-    response = requests.get(url, stream=True)
-    with open(file_name, "wb") as handle:
-        for data in tqdm(response.iter_content()):
-            handle.write(data)
-    handle.close()
-
-
-def get_link_codigos(paginas = []):
-
+def get_data_from_site(paginas = []):
     url = 'http://www.seagri.ba.gov.br/cotacao'
-    
-
-    
-    url = 'http://www.agricultura.pr.gov.br/modules/qas/categoria.php'
     session = HTMLSession()
-    links = []
+    today = datetime.date.today()
 
     for page in paginas:
         print('pagina:', page)
@@ -35,88 +20,54 @@ def get_link_codigos(paginas = []):
             'praca': '',
             'tipo': '',
             'data_inicio': '01/01/2010',
-            'data_final': '23/03/2018'
+            'data_final': today.strftime('%d/%m/%Y')
         }
         
         response = session.get(url, params=params)
-
         if (response.status_code != 200):
             print('erro no acesso a página: ', url, params)
+            get_data_from_site([page])
             continue
-            
-            print(response.html)
 
-        try:
-            table = response.html.find('#conteudo > table.cotacoes.sticky-enabled.tableheader-processed.sticky-table', first=True)
-        except Exception as e:
-            print('', e)
-            continue
-  
+        soup = BeautifulSoup(response.content, 'lxml')
+        table = soup.select_one("table.cotacoes")
+        
+        rows = []
+        for row in table.find_all("tr")[1:]:
+            td1, td2, td3, td4, td5, td6 = row.find_all("td")
+
+            preco = td6.text.replace('R$ ', '').replace(',', '.').replace('sem cotação', '')
+            data_referencia = datetime.datetime.strptime(td1.text, '%d/%m/%Y')
+            
+            if preco is '':
+                preco = None
+
+            row = {
+                'dt_referencia': data_referencia,
+                'no_produto': td2.text,
+                'no_praca': td3.text,
+                'no_tipo': td4.text,
+                'no_unidade': td5.text,
+                'vr_real': preco
+            }
+            rows.append(row)
+    
+        # agora que tem os dados da tabela completa, inclui no arquivo csv
+        path_file_base = os.path.join('bases', 'precos_seagri_base.csv')
+        for row in rows:
+            # faz o append no csv da base
+            with open(path_file_base, 'a', newline='') as baseFile:
+                fieldnames = ['dt_referencia', 'no_produto', 'no_praca', 'no_tipo', 'no_unidade', 'vr_real']
+                writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+                writer.writerow(row)
+                print(row)
     return True
 
 
-def get_link_planilhas(codigos = []):
-    # agora que já tem os códigos, vai para a página para baixar o xls correspondente
-    url = 'http://www.agricultura.pr.gov.br/modules/qas/aviso.php'
-    planilhas = []
-    session = HTMLSession()
-   
-    for codigo in codigos:
-        print('código:', codigo)
-        params = { 'codigo': str(codigo) }
-        response = session.get(url, params=params)
-
-        if (response.status_code != 200):
-            continue
-
-        try:
-            links_page = response.html.links
-        except Exception as e:
-            links_page = []
-            print('erro', e)
-            continue
-
-        for link in links_page:
-            if (link.endswith('_impressao.xls')):
-                # faz o append no csv da base
-                with open('urls.csv', 'a', newline='') as baseFile:
-                    fieldnames = ['url']
-                    writer = csv.DictWriter(baseFile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
-                    row_inserted = { 'url': link }
-                    writer.writerow(row_inserted)
-                planilhas.append(link)
-    
-    return planilhas
-
-
-def download_planilhas(planilhas = []):
-    url = 'http://www.agricultura.pr.gov.br/modules/qas/'
-
-    for planilha in planilhas:
-        url_planilha = url+planilha
-        print(url_planilha)
-        name_file = url_planilha.split('/')[-1]
-        path_file = os.path.join('downloads', name_file)
-        if os.path.exists(path_file):
-            continue
-        download_file(url_planilha, path_file)
-
-
 def main():
-    paginas = list(range(1, 2, 1))
-    #paginas = list(range(1, 6173, 1))
-    print(paginas)
-    codigos = get_link_codigos(paginas)
-    
-    # agora que já tem os códigos, vai para a página para baixar o xls correspondente
-    #if len(codigos) > 0:
-        #print(len(codigos))
-        #planilhas = get_link_planilhas(codigos)
-    
-
-    #if len(planilhas) > 0:
-        #print(len(planilhas))
-        #download_planilhas(planilhas)
+    pagina_inicial = 3661
+    paginas = list(range(pagina_inicial, 6173, 1))
+    get_data_from_site(paginas)
 
 
 if __name__ == '__main__':
