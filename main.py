@@ -65,7 +65,7 @@ def get_data_from_site(paginas = []):
 
 
 def main():
-    pagina_inicial = 3661
+    pagina_inicial = 6172
     paginas = list(range(pagina_inicial, 6173, 1))
     get_data_from_site(paginas)
 
