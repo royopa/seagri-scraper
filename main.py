@@ -112,9 +112,10 @@ def main():
     ultima_data_base = get_ultima_data_disponivel_base(path_file_base)
     print('última data base:', ultima_data_base)
 
-    ultima_pagina = get_ultima_pagina(ultima_data_base)    
+    start_date = ultima_data_base + datetime.timedelta(days=1)
+    ultima_pagina = get_ultima_pagina(start_date)
     paginas = list(range(1, ultima_pagina, 1))
-    get_data_from_site(paginas, ultima_data_base, ultima_pagina)
+    get_data_from_site(paginas, start_date, ultima_pagina)
 
 
 if __name__ == '__main__':
