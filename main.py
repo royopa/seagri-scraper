@@ -31,13 +31,13 @@ def get_ultima_pagina(ultima_data_base):
     return int(element[3].split('&')[0])
 
 
-def get_data_from_site(paginas, ultima_data_base):
+def get_data_from_site(paginas, ultima_data_base, ultima_pagina):
     url = 'http://www.seagri.ba.gov.br/cotacao'
     session = HTMLSession()
     today = datetime.date.today()
 
     for page in paginas:
-        print('pagina:', page)
+        print('extraindo dados - ', 'página', str(page).zfill(4), 'de', str(ultima_pagina).zfill(4))
 
         params = {
             'page': str(page),
@@ -53,7 +53,7 @@ def get_data_from_site(paginas, ultima_data_base):
         response = session.get(url, params=params)
         if (response.status_code != 200):
             print('erro no acesso a página: ', url, params)
-            get_data_from_site([page], ultima_data_base)
+            get_data_from_site([page], ultima_data_base, ultima_pagina)
             continue
 
         soup = BeautifulSoup(response.content, 'lxml')
@@ -114,7 +114,7 @@ def main():
 
     ultima_pagina = get_ultima_pagina(ultima_data_base)    
     paginas = list(range(1, ultima_pagina, 1))
-    get_data_from_site(paginas, ultima_data_base)
+    get_data_from_site(paginas, ultima_data_base, ultima_pagina)
 
 
 if __name__ == '__main__':
