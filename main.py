@@ -26,6 +26,15 @@ def get_ultima_pagina(ultima_data_base):
         print('erro no acesso a página: ', url, params)
         get_ultima_pagina(ultima_data_base)
     
+
+    # verifica se existe cotação disponível para baixar
+    soup = BeautifulSoup(response.content, 'lxml')
+    table = soup.select_one("table.cotacoes")
+    for row in table.find_all("tr")[1:]:
+        if 'Sem cotações' in row.text:
+            print('Não existe cotação a ser capturada')
+            exit()
+    
     last_page_link = response.html.find('.pager-last > a:nth-child(1)', first=True)
     element = last_page_link.html.split('=')
     return int(element[3].split('&')[0])
