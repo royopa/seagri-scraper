@@ -1,5 +1,7 @@
+[![Build Status](https://travis-ci.org/royopa/seagri-scraper.svg?branch=master)](https://travis-ci.org/royopa/seagri-scraper)
+
 # seagri-scraper
-Projeto para captura de dados do site SEAGRI-BA, com preços produtos de agricultura, pecuária, irrigação, pesca e aquicultura da Bahia
+Projeto para captura de dados do site SEAGRI-BA, com preços de produtos de agricultura, pecuária, irrigação, pesca e aquicultura da Bahia.
 
 
 ## Links
