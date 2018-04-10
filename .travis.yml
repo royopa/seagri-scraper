@@ -8,4 +8,4 @@ install:
   - 'pipenv install --deploy --system --dev'
 
 script:
-  - 'pipenv run ./main.py'
+  - "pipenv run tests"
