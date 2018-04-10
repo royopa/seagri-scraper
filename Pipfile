@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-request = "*"
 pandas = "*"
 tqdm = "*"
 requests = "*"

@@ -82,7 +82,7 @@ def get_data_from_site(paginas, ultima_data_base, ultima_pagina):
                 preco = None
 
             # só insere datas que ainda não estão na base
-            if ultima_data_base > data_referencia:
+            if ultima_data_base >= data_referencia:
                 continue
 
             row = {
