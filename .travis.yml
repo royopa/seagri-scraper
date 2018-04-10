@@ -9,3 +9,10 @@ install:
 
 script:
   - "python ./main.py"
+
+notifications:
+  email:
+    recipients:
+      - royopa@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
