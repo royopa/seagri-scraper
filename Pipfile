@@ -17,6 +17,8 @@ coverage = "*"
 flask-script = "*"
 xlsxwriter = "*"
 requests-html = "*"
+matplotlib = "*"
+seaborn = "*"
 
 
 [dev-packages]

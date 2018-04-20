@@ -9,6 +9,7 @@ install:
 
 script:
   - "python ./main.py"
+  - "python ./analise.py"
 
 notifications:
   email:
