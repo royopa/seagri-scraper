@@ -8,4 +8,6 @@ pyexcel-xls
 coverage
 flask_script
 xlsxwriter
-requests_html
+requests-html
+matplotlib
+seaborn
