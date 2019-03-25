@@ -37,7 +37,11 @@ def get_ultima_pagina(ultima_data_base):
     
     last_page_link = response.html.find('.pager-last > a:nth-child(1)', first=True)
     element = last_page_link.html.split('=')
-    return int(element[3].split('&')[0])
+    
+    if element[3].split('&')[0] != '':
+        return int(element[3].split('&')[0])
+
+    return 0
 
 
 def get_data_from_site(paginas, ultima_data_base, ultima_pagina):
